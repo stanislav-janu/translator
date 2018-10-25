@@ -1,0 +1,34 @@
+{
+	"name": "stanislav-janu/translator",
+	"description": "Translator for nette",
+	"homepage": "https://lweb.cz",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Stanislav Janů",
+			"homepage": "http://www.lweb.cz"
+		}
+	],
+	"require": {
+		"php": ">=7.1.0",
+		"ext-pdo": "*",
+		"nette/caching": "^2.5",
+		"nette/database": "^2.4",
+		"stanislav-janu/date-time": "^1.0"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "*"
+	},
+	"conflict": {
+		"nette/nette": "<2.3"
+	},
+	"autoload": {
+		"classmap": ["src/"]
+	},
+	"minimum-stability": "stable",
+	"extra": {
+		"branch-alias": {
+			"dev-master": "1.0-dev"
+		}
+	}
+}
