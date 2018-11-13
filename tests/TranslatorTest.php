@@ -23,9 +23,9 @@ class TranslatorTest extends TestCase
 		$dsn = 'mysql:host=127.0.0.1;dbname=test';
 		$user = 'root';
 		$password = '';
-		$options = array(
+		$options = [
 			\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4',
-		);
+		];
 		$storage = new MemoryStorage();
 		try {
 			$connection = new Connection($dsn, $user, $password, $options);
@@ -54,8 +54,17 @@ class TranslatorTest extends TestCase
 		$this->translator->setSelectedLanguage('de');
 	}
 
+	/**
+	 * @expectedException \JCode\TranslatorBadLanguageException
+	 */
+	public function testDefaultException()
+	{
+		$this->translator->setDefaultLanguage('de');
+	}
+
 	public function testMain()
 	{
+		$this->translator->setDefaultLanguage('cz');
 		$this->translator->setSelectedLanguage('cz');
 
 		$this->assertArrayHasKey('cz', $this->translator->getLanguages());
@@ -67,12 +76,42 @@ class TranslatorTest extends TestCase
 		$this->assertSame('testy', (string) $this->translator->translate('app.test', 2));
 		$this->assertSame('testů', (string) $this->translator->translate('app.test', 5));
 
+		$this->assertSame('::message.test', $this->translator->translate('::message.test'));
+		$this->assertSame(1, $this->database->table(Translator::TRANSLATIONS_TABLE_NAME)->where('language', 'cz')->where('original', '::message.test')->count());
+
+		$this->assertSame('::message_test', $this->translator->translate('::message_test'));
+		$this->assertSame(1, $this->database->table(Translator::TRANSLATIONS_TABLE_NAME)->where('language', 'cz')->where('original', '::message_test')->count());
+
+		$this->assertSame('::message-test', $this->translator->translate('::message-test'));
+		$this->assertSame(1, $this->database->table(Translator::TRANSLATIONS_TABLE_NAME)->where('language', 'cz')->where('original', '::message-test')->count());
+
+		$this->assertSame('::message test', $this->translator->translate('::message test'));
+		$this->assertSame(0, $this->database->table(Translator::TRANSLATIONS_TABLE_NAME)->where('language', 'cz')->where('original', '::message test')->count());
+
+		$this->assertSame('message test', $this->translator->translate('message test'));
+		$this->assertSame(0, $this->database->table(Translator::TRANSLATIONS_TABLE_NAME)->where('language', 'cz')->where('original', 'message test')->count());
+
 		$this->translator->setSelectedLanguage('en');
 
 		$this->assertSame('Non exists', $this->translator->translate('Non exists'));
 		$this->assertSame('app.test', (string) $this->translator->translate('app.test'));
 		$this->assertSame('app.test', (string) $this->translator->translate('app.test', 2));
 		$this->assertSame('app.test', (string) $this->translator->translate('app.test', 5));
+
+		$this->assertSame('::message.test', $this->translator->translate('::message.test'));
+		$this->assertSame(1, $this->database->table(Translator::TRANSLATIONS_TABLE_NAME)->where('language', 'en')->where('original', '::message.test')->count());
+
+		$this->assertSame('::message_test', $this->translator->translate('::message_test'));
+		$this->assertSame(1, $this->database->table(Translator::TRANSLATIONS_TABLE_NAME)->where('language', 'en')->where('original', '::message_test')->count());
+
+		$this->assertSame('::message-test', $this->translator->translate('::message-test'));
+		$this->assertSame(1, $this->database->table(Translator::TRANSLATIONS_TABLE_NAME)->where('language', 'en')->where('original', '::message-test')->count());
+
+		$this->assertSame('::message test', $this->translator->translate('::message test'));
+		$this->assertSame(1, $this->database->table(Translator::TRANSLATIONS_TABLE_NAME)->where('language', 'en')->where('original', '::message test')->count());
+
+		$this->assertSame('message test', $this->translator->translate('message test'));
+		$this->assertSame(1, $this->database->table(Translator::TRANSLATIONS_TABLE_NAME)->where('language', 'en')->where('original', 'message test')->count());
 	}
 
 	public function tearDown()
@@ -80,8 +119,8 @@ class TranslatorTest extends TestCase
 		$this->database->beginTransaction();
 		$this->database->query(
 			'SET FOREIGN_KEY_CHECKS=0;'
-			.'DROP TABLE `languages`;'
-			.'DROP TABLE `translations`;'
+			.'DROP TABLE `'.Translator::LANGUAGES_TABLE_NAME.'`;'
+			.'DROP TABLE `'.Translator::TRANSLATIONS_TABLE_NAME.'`;'
 			.'SET FOREIGN_KEY_CHECKS=1;'
 		);
 		$this->database->commit();
