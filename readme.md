@@ -1,5 +1,5 @@
 # Translator
-Translator for nette with using MySQL.
+Translator for Nette Framework with using MySQL.
 
 [![Build Status](https://travis-ci.org/stanislav-janu/translator.svg?branch=master)](https://travis-ci.org/stanislav-janu/translator)
 [![Latest Stable Version](https://poser.pugx.org/stanislav-janu/translator/v/stable)](https://packagist.org/packages/stanislav-janu/translator)
