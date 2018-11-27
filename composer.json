@@ -9,21 +9,23 @@
 			"homepage": "http://www.lweb.cz"
 		}
 	],
+	"autoload": {
+		"classmap": [
+			"src/"
+		]
+	},
 	"require": {
 		"php": ">=7.1.0",
 		"ext-pdo": "*",
 		"nette/caching": "^2.5",
-		"nette/database": "^2.4",
-		"stanislav-janu/date-time": "^1.0"
+		"nette/database": "^2.4"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "*"
+		"nette/tester": "^2.1.0",
+		"phpstan/phpstan": "^0.10.5"
 	},
 	"conflict": {
 		"nette/nette": "<2.3"
-	},
-	"autoload": {
-		"classmap": ["src/"]
 	},
 	"minimum-stability": "stable",
 	"extra": {
