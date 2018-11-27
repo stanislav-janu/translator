@@ -62,54 +62,64 @@ class Translator implements Nette\Localization\ITranslator
 	}
 
 	/**
-	 * @param string|int|\DateTimeInterface $message
-	 * @param string|int|null               $count
-	 *
-	 * @return \Nette\Utils\Html|string
-	 */
-	public function translate($message, $count = NULL)
-	{
-		if ($message instanceof \DateTimeInterface || is_int($message)) {
-			return self::translateDateTime($message, (string) $count);
-		} elseif (is_string($message)) {
-			$count = self::getCount(is_null($count) ? NULL : intval($count));
-
-			if (Strings::substring($message, 0, 1) === '!') // Mark stopping translating text
-			{
-				return Strings::substring($message, 1, Strings::length($message) - 1);
-			}
-
-			foreach ($this->translations as $translation) {
-				if ($translation['original'] === $message && $translation['count'] === $count) {
-					if (empty($translation['translation'])) {
-						return Nette\Utils\Html::el()->setHtml($message);
-					}
-
-					return Nette\Utils\Html::el()->setHtml($translation['translation']);
-				}
-			}
-
-			$this->writeForTranslate($message, $count);
-		}
-
-		return $message;
-	}
-
-	/**
 	 * @param int|\DateTimeInterface $date
 	 * @param string                 $format
 	 *
 	 * @return string
 	 */
-	public static function translateDateTime($date, string $format = '%e. %B %Y'): string
+	public function translateDateTime($date, string $format = '%e. %B %Y'): string
 	{
-		if($date instanceof \DateTimeInterface) {
+		if ($date instanceof \DateTimeInterface) {
 			$timestamp = $date->getTimestamp();
 		} else {
 			$timestamp = $date;
 		}
 
 		return strftime($format, $timestamp);
+	}
+
+	/**
+	 * @param string             $message
+	 * @param array<int, string> $parameters
+	 *
+	 * @return string
+	 */
+	public function translate($message, ...$parameters): string
+	{
+		$namespace = NULL;
+		$count     = 1;
+
+		if (isset($parameters[0])) {
+			if (is_int($parameters[0])) {
+				$count = $parameters[0];
+			} elseif (is_string($parameters[0])) {
+				$namespace = $parameters[0];
+				if (isset($parameters[1]) && is_int($parameters[1])) {
+					$count = $parameters[1];
+				}
+			}
+		}
+
+		$count = self::getCount($count);
+
+		// Mark for stopping translating text
+		if (Strings::substring($message, 0, 1) === '!') {
+			return Strings::substring($message, 1, Strings::length($message) - 1);
+		}
+
+		foreach ($this->translations as $translation) {
+			if ($translation['namespace'] === $namespace && $translation['original'] === $message && $translation['count'] === $count) {
+				if (empty($translation['translation'])) {
+					return $message;
+				}
+
+				return $translation['translation'];
+			}
+		}
+
+		$this->writeForTranslate($message, $namespace, $count);
+
+		return $message;
 	}
 
 	/**
@@ -133,10 +143,11 @@ class Translator implements Nette\Localization\ITranslator
 	}
 
 	/**
-	 * @param string $message
-	 * @param int    $count
+	 * @param string      $message
+	 * @param string|null $namespace
+	 * @param int         $count
 	 */
-	public function writeForTranslate(string $message, int $count = 1)
+	public function writeForTranslate(string $message, ?string $namespace, int $count = 1)
 	{
 		if (
 			!empty($message) &&
@@ -148,6 +159,7 @@ class Translator implements Nette\Localization\ITranslator
 			$find = $this->database->table(self::TRANSLATIONS_TABLE_NAME)
 				->where('language', $this->selectedLanguage)
 				->where('original', $message)
+				->where('namespace', $namespace)
 				->where('count', (string) $count)
 				->count();
 
@@ -155,18 +167,20 @@ class Translator implements Nette\Localization\ITranslator
 				$this->database->table(self::TRANSLATIONS_TABLE_NAME)->insert([
 					'language'    => $this->selectedLanguage,
 					'original'    => $message,
+					'namespace'   => $namespace,
 					'count'       => (string) $count,
 					'translation' => '',
 				]);
 				$this->translations[] = [
 					'original'    => $message,
+					'namespace'   => $namespace,
 					'count'       => (string) $count,
 					'translation' => '',
 				];
 
 				if ($count > 1) {
-					$this->writeForTranslate($message, 1);
-					$this->writeForTranslate($message, $count === 2 ? 5 : 2);
+					$this->writeForTranslate($message, $namespace, 1);
+					$this->writeForTranslate($message, $namespace, $count === 2 ? 5 : 2);
 				};
 			}
 		}
@@ -225,6 +239,7 @@ class Translator implements Nette\Localization\ITranslator
 			foreach ($database->table(self::TRANSLATIONS_TABLE_NAME)->where('language', $selectedLanguage)->fetchAll() as $item) {
 				$translations[] = [
 					'original'    => $item->original,
+					'namespace'   => $item->namespace,
 					'translation' => $item->translation,
 					'count'       => (int) $item->count,
 				];

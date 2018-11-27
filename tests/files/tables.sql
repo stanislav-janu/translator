@@ -12,15 +12,19 @@ INSERT INTO `languages` (`id`, `code`, `name`, `order`) VALUES
 CREATE TABLE `translations` (
   `id` int(11) NOT NULL,
   `language` varchar(2) NOT NULL,
+  `namespace` varchar(255) DEFAULT NULL,
   `original` text NOT NULL,
   `count` enum('1','2','5') DEFAULT '1',
   `translation` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `translations` (`id`, `language`, `original`, `count`, `translation`) VALUES
-(1, 'cz', 'app.test', '1', 'test'),
-(2, 'cz', 'app.test', '2', 'testy'),
-(3, 'cz', 'app.test', '5', 'testů');
+INSERT INTO `translations` (`id`, `language`, `namespace`, `original`, `count`, `translation`) VALUES
+(1, 'cz', NULL, 'app.test', '1', 'test'),
+(2, 'cz', NULL, 'app.test', '2', 'testy'),
+(3, 'cz', NULL, 'app.test', '5', 'testů'),
+(4, 'cz', 'test', 'app.test', '1', 'prasátko'),
+(5, 'cz', 'test', 'app.test', '2', 'prasátka'),
+(6, 'cz', 'test', 'app.test', '5', 'prasátek');
 
 ALTER TABLE `languages`
   ADD PRIMARY KEY (`id`),

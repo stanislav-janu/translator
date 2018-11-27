@@ -73,19 +73,25 @@ Assert::true(isset($languages['cz']));
 Assert::true(isset($languages['en']));
 Assert::false(isset($languages['de']));
 
-Assert::same((string) $translator->translate('Non exists'), 'Non exists');
-Assert::same((string) $translator->translate('app.test'), 'test');
-Assert::same((string) $translator->translate('app.test', 2), 'testy');
-Assert::same((string) $translator->translate('app.test', 5), 'testů');
+Assert::same('Non exists', $translator->translate('Non exists'));
+Assert::same('test', $translator->translate('app.test'));
+Assert::same('testy', $translator->translate('app.test', 2));
+Assert::same('testů', $translator->translate('app.test', 5));
+
+Assert::same('Non exists', $translator->translate('Non exists', 'test'));
+Assert::same('prasátko', $translator->translate('app.test', 'test'));
+Assert::same('prasátka', $translator->translate('app.test', 'test', 2));
+Assert::same('prasátek', $translator->translate('app.test', 'test', 5));
 
 $translator->setSelectedLanguage('en');
 
-Assert::same((string) $translator->translate('Non exists'), 'Non exists');
-Assert::same((string) $translator->translate('app.test'), 'app.test');
-Assert::same((string) $translator->translate('app.test', 2), 'app.test');
-Assert::same((string) $translator->translate('app.test', 5), 'app.test');
+Assert::same('Non exists', $translator->translate('Non exists'));
+Assert::same('app.test', $translator->translate('app.test'));
+Assert::same('app.test', $translator->translate('app.test', 2));
+Assert::same('app.test', $translator->translate('app.test', 5));
 
-Assert::same((string) $translator->translate(DateTime::from('1991-06-17 03:33:12'), '%e. %B %Y %k:%M:%S'), '17. June 1991  3:33:12');
+Assert::same('17. June 1991  3:33:12', $translator->translateDateTime(DateTime::from('1991-06-17 03:33:12'), '%e. %B %Y %k:%M:%S'));
+Assert::same('17. June 1991  3:33:12', $translator->translateDateTime(677122392, '%e. %B %Y %k:%M:%S'));
 
 
 

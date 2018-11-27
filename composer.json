@@ -17,20 +17,21 @@
 	"require": {
 		"php": ">=7.1.0",
 		"ext-pdo": "*",
-		"nette/caching": "^2.5",
-		"nette/database": "^2.4"
+		"nette/utils": "^3.0.0-RC1",
+		"nette/caching": "^3.0.0-RC1",
+		"nette/database": "^3.0.0-RC1"
 	},
 	"require-dev": {
 		"nette/tester": "^2.1.0",
 		"phpstan/phpstan": "^0.10.5"
 	},
 	"conflict": {
-		"nette/nette": "<2.3"
+		"nette/utils": "<3.0"
 	},
-	"minimum-stability": "stable",
+	"minimum-stability": "dev",
 	"extra": {
 		"branch-alias": {
-			"dev-master": "1.0-dev"
+			"dev-master": "2.0-dev"
 		}
 	}
 }
