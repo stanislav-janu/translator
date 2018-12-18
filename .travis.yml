@@ -10,4 +10,6 @@ before_script:
     - composer install --dev
     - mysql -e 'CREATE DATABASE test;'
 
-script: ./vendor/phpunit/phpunit/phpunit --configuration phpunit.xml
+script:
+    - ./vendor/bin/tester src
+    - ./vendor/bin/phpstan analyse src -l 7

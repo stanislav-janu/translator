@@ -12,6 +12,7 @@ INSERT INTO `languages` (`id`, `code`, `name`, `order`) VALUES
 CREATE TABLE `translations` (
   `id` int(11) NOT NULL,
   `language` varchar(2) NOT NULL,
+  `namespace` varchar(255) DEFAULT NULL,
   `original` text NOT NULL,
   `count` enum('1','2','5') DEFAULT '1',
   `translation` text NOT NULL
