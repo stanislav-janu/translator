@@ -14,16 +14,25 @@
 			"src/"
 		]
 	},
+	"scripts": {
+		"t": "vendor/bin/tester tests -C",
+		"sa": "vendor/bin/phpstan analyse src -l 7",
+		"cs-i": "composer create-project nette/coding-standard temp/nette-coding-standard",
+		"cs-t": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --config temp/nette-coding-standard/coding-standard-php71.yml",
+		"cs-f": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --config temp/nette-coding-standard/coding-standard-php71.yml --fix"
+	},
 	"require": {
 		"php": ">=7.1.0",
 		"ext-pdo": "*",
-		"nette/utils": "^3.0.0-RC1",
-		"nette/caching": "^3.0.0-RC1",
-		"nette/database": "^3.0.0-RC1"
+
+		"nette/utils": "^3.0",
+		"nette/caching": "^3.0",
+		"nette/database": "^3.0",
+		"thecodingmachine/safe": "^0.1.13"
 	},
 	"require-dev": {
-		"nette/tester": "^2.1.0",
-		"phpstan/phpstan": "^0.10.5"
+		"nette/tester": "^2.1",
+		"stanislav-janu/phpstan": "^0.11"
 	},
 	"conflict": {
 		"nette/utils": "<3.0"

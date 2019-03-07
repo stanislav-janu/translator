@@ -1,0 +1,10 @@
+parameters:
+	ignoreErrors:
+		- '#PHPDoc tag @param for parameter \$parameters with type mixed is not subtype of native type array\<int\, mixed\>.#'
+
+includes:
+	- vendor/phpstan/phpstan-nette/rules.neon
+	- vendor/phpstan/phpstan-nette/extension.neon
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
+	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
+	- vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon

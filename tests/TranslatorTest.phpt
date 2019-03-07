@@ -19,15 +19,15 @@ use Nette\Database\Structure;
 use Nette\Utils\DateTime;
 use Tester\Assert;
 
-require __DIR__.'/bootstrap.php';
+require __DIR__ . '/bootstrap.php';
 
 
 
 // SetUp
-$dsn      = 'mysql:host=127.0.0.1;dbname=test';
-$user     = 'root';
+$dsn = 'mysql:host=127.0.0.1;dbname=test';
+$user = 'root';
 $password = '';
-$options  = [
+$options = [
 	\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4',
 ];
 
@@ -35,19 +35,19 @@ $storage = new MemoryStorage();
 try {
 	$connection = new Connection($dsn, $user, $password, $options);
 } catch (ConnectionException $exception) {
-	$password   = 'root';
+	$password = 'root';
 	$connection = new Connection($dsn, $user, $password, $options);
 }
 
 $structure = new Structure($connection, $storage);
-$database  = new Context($connection, $structure);
+$database = new Context($connection, $structure);
 
 $database->beginTransaction();
 $database->query(
 	'SET FOREIGN_KEY_CHECKS=0;'
-	.'DROP TABLE `languages`;'
-	.'DROP TABLE `translations`;'
-	.'SET FOREIGN_KEY_CHECKS=1;'
+	. 'DROP TABLE `languages`;'
+	. 'DROP TABLE `translations`;'
+	. 'SET FOREIGN_KEY_CHECKS=1;'
 );
 $database->commit();
 
@@ -99,8 +99,8 @@ Assert::same('17. June 1991  3:33:12', $translator->translateDateTime(677122392,
 $database->beginTransaction();
 $database->query(
 	'SET FOREIGN_KEY_CHECKS=0;'
-	.'DROP TABLE `languages`;'
-	.'DROP TABLE `translations`;'
-	.'SET FOREIGN_KEY_CHECKS=1;'
+	. 'DROP TABLE `languages`;'
+	. 'DROP TABLE `translations`;'
+	. 'SET FOREIGN_KEY_CHECKS=1;'
 );
 $database->commit();

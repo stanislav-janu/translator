@@ -1,3 +1,4 @@
 /vendor
 /tests/output
 composer.lock
+/temp
