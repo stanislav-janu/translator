@@ -152,7 +152,7 @@ class Translator implements Nette\Localization\ITranslator
 		if (
 			!empty($message) &&
 			(
-				preg_match('/^::[a-zA-Z1-9-._]*$/s', $message) === 1 ||
+				preg_match('/^::[a-zA-Z0-9-._]*$/s', $message) === 1 ||
 				$this->selectedLanguage !== $this->defaultLanguage
 			)
 		) {
