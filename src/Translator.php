@@ -95,6 +95,24 @@ class Translator implements Nette\Localization\ITranslator
 		return $message;
 	}
 
+
+	/**
+	 * @return string
+	 */
+	public function getDefaultLanguage(): string
+	{
+		return $this->defaultLanguage;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getSelectedLanguage(): string
+	{
+		return $this->selectedLanguage;
+	}
+
 	/**
 	 * @param int|\DateTimeInterface $date
 	 * @param string                 $format
