@@ -21,8 +21,8 @@ use function Safe\sprintf;
  */
 class Translator implements Nette\Localization\ITranslator
 {
-	public const
-		LANGUAGES_TABLE_NAME = 'languages', TRANSLATIONS_TABLE_NAME = 'translations';
+	public const LANGUAGES_TABLE_NAME = 'languages';
+	public const TRANSLATIONS_TABLE_NAME = 'translations';
 
 	/** @var Nette\Database\Context */
 	public $database;
@@ -86,9 +86,10 @@ class Translator implements Nette\Localization\ITranslator
 
 	/**
 	 * @param mixed $message
-	 * @param mixed $parameters
+	 * @param mixed ...$parameters
 	 *
 	 * @return string
+	 * @throws \Safe\Exceptions\StringsException
 	 */
 	public function translate($message, ...$parameters): string
 	{

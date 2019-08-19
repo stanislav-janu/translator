@@ -16,10 +16,10 @@
 	},
 	"scripts": {
 		"t": "vendor/bin/tester tests -C",
-		"sa": "vendor/bin/phpstan analyse src -l 7",
+		"sa": "vendor/bin/phpstan analyse src -l 7 --ansi",
 		"cs-i": "composer create-project nette/coding-standard temp/nette-coding-standard",
-		"cs-t": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --config temp/nette-coding-standard/coding-standard-php71.yml",
-		"cs-f": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --config temp/nette-coding-standard/coding-standard-php71.yml --fix"
+		"cs-t": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --config temp/nette-coding-standard/coding-standard-php71.yml --ansi",
+		"cs-f": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --config temp/nette-coding-standard/coding-standard-php71.yml --fix --ansi"
 	},
 	"require": {
 		"php": ">=7.1.0",
@@ -28,7 +28,7 @@
 		"nette/utils": "^3.0",
 		"nette/caching": "^3.0",
 		"nette/database": "^3.0",
-		"thecodingmachine/safe": "^0.1.13"
+		"thecodingmachine/safe": "^0.1"
 	},
 	"require-dev": {
 		"nette/tester": "^2.1",
@@ -37,7 +37,7 @@
 	"conflict": {
 		"nette/utils": "<3.0"
 	},
-	"minimum-stability": "dev",
+	"minimum-stability": "stable",
 	"extra": {
 		"branch-alias": {
 			"dev-master": "2.0-dev"
