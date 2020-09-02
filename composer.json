@@ -16,7 +16,7 @@
 	},
 	"scripts": {
 		"t": "vendor/bin/tester tests -C",
-		"sa": "docker run --rm -v $PWD:/app phpstan/phpstan analyse app -l max --memory-limit=512M --ansi",
+		"sa": "docker run --rm -v $PWD:/app phpstan/phpstan analyse src -l max --memory-limit=512M --ansi",
 		"cs-i": "composer create-project nette/coding-standard temp/nette-coding-standard",
 		"cs-t": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --config temp/nette-coding-standard/coding-standard-php71.yml --ansi",
 		"cs-f": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --config temp/nette-coding-standard/coding-standard-php71.yml --fix --ansi"

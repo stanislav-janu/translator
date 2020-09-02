@@ -30,10 +30,10 @@ class Translator implements Nette\Localization\ITranslator
 	/** @var Nette\Caching\Cache */
 	public $cache;
 
-	/** @var array */
+	/** @var array<string> */
 	private $languages = [];
 
-	/** @var array */
+	/** @var array<array> */
 	private $translations = [];
 
 	/** @var string */
@@ -54,7 +54,7 @@ class Translator implements Nette\Localization\ITranslator
 		$this->database = $database;
 		$this->cache = new Nette\Caching\Cache($storage, 'JCode-translator');
 
-		$this->languages = $this->cache->load('translator-languages', function (&$dependencies) use ($database) {
+		$this->languages = $this->cache->load('translator-languages', function (&$dependencies) use ($database): array {
 			$dependencies = [
 				Nette\Caching\Cache::EXPIRE => '60 minutes',
 			];
@@ -245,7 +245,7 @@ class Translator implements Nette\Localization\ITranslator
 		$database = $this->database;
 		$selectedLanguage = $this->selectedLanguage;
 
-		$this->translations = $this->cache->load('translations-' . $selectedLanguage, function (&$dependencies) use ($database, $selectedLanguage) {
+		$this->translations = $this->cache->load('translations-' . $selectedLanguage, function (&$dependencies) use ($database, $selectedLanguage): array {
 			$dependencies = [
 				Nette\Caching\Cache::EXPIRE => '60 minutes',
 			];
@@ -285,7 +285,7 @@ class Translator implements Nette\Localization\ITranslator
 
 
 	/**
-	 * @return array
+	 * @return array<string>
 	 */
 	public function getLanguages(): array
 	{
