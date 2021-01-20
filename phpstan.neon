@@ -1,5 +1,7 @@
 parameters:
-	ignoreErrors:
+	level: max
+	paths:
+		- src
 
 includes:
 	- vendor/phpstan/phpstan-nette/rules.neon

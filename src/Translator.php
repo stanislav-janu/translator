@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace JCode;
 
+use DateTimeInterface;
 use Nette;
 use Nette\Utils\Strings;
-use Safe\Exceptions\PcreException;
 use function Safe\sprintf;
 
 
@@ -19,37 +19,33 @@ use function Safe\sprintf;
  * Class Translator
  * @package JCode
  */
-class Translator implements Nette\Localization\ITranslator
+class Translator implements Nette\Localization\Translator
 {
 	public const LANGUAGES_TABLE_NAME = 'languages';
 	public const TRANSLATIONS_TABLE_NAME = 'translations';
 
-	/** @var Nette\Database\Context */
-	public $database;
+	public Nette\Database\Explorer $database;
 
-	/** @var Nette\Caching\Cache */
-	public $cache;
+	public Nette\Caching\Cache $cache;
 
 	/** @var array<string> */
-	private $languages = [];
+	private array $languages;
 
 	/** @var array<array> */
-	private $translations = [];
+	private array $translations = [];
 
-	/** @var string */
-	private $defaultLanguage = 'cz';
+	private string $defaultLanguage = 'cz';
 
-	/** @var string */
-	private $selectedLanguage = 'cz';
+	private string $selectedLanguage = 'cz';
 
 
 	/**
 	 * Translator constructor.
 	 *
-	 * @param \Nette\Database\Context $database
-	 * @param \Nette\Caching\IStorage $storage
+	 * @param Nette\Database\Explorer $database
+	 * @param Nette\Caching\Storage   $storage
 	 */
-	public function __construct(Nette\Database\Context $database, Nette\Caching\IStorage $storage)
+	public function __construct(Nette\Database\Explorer $database, Nette\Caching\Storage $storage)
 	{
 		$this->database = $database;
 		$this->cache = new Nette\Caching\Cache($storage, 'JCode-translator');
@@ -67,20 +63,20 @@ class Translator implements Nette\Localization\ITranslator
 
 
 	/**
-	 * @param int|\DateTimeInterface $date
-	 * @param string                 $format
+	 * @param int|DateTimeInterface $date
+	 * @param string                $format
 	 *
 	 * @return string
 	 */
 	public function translateDateTime($date, string $format = '%e. %B %Y'): string
 	{
-		if ($date instanceof \DateTimeInterface) {
+		if ($date instanceof DateTimeInterface) {
 			$timestamp = $date->getTimestamp();
 		} else {
 			$timestamp = $date;
 		}
 
-		return strftime($format, $timestamp);
+		return (string) strftime($format, $timestamp);
 	}
 
 
@@ -89,7 +85,6 @@ class Translator implements Nette\Localization\ITranslator
 	 * @param mixed ...$parameters
 	 *
 	 * @return string
-	 * @throws \Safe\Exceptions\StringsException
 	 */
 	public function translate($message, ...$parameters): string
 	{
@@ -119,7 +114,11 @@ class Translator implements Nette\Localization\ITranslator
 		}
 
 		foreach ($this->translations as $translation) {
-			if ($translation['namespace'] === $namespace && $translation['original'] === $message && $translation['count'] === $count) {
+			if (
+				$translation['namespace'] === $namespace
+				&& $translation['original'] === $message
+				&& $translation['count'] === $count
+			) {
 				if (Strings::trim($translation['translation']) === '' || $translation['translation'] === null) {
 					return $message;
 				}
@@ -134,11 +133,6 @@ class Translator implements Nette\Localization\ITranslator
 	}
 
 
-	/**
-	 * @param int|null $number
-	 *
-	 * @return int
-	 */
 	private static function getCount(int $number = null): int
 	{
 		if ($number === null) {
@@ -155,45 +149,43 @@ class Translator implements Nette\Localization\ITranslator
 	}
 
 
-	/**
-	 * @param string      $message
-	 * @param string|null $namespace
-	 * @param int         $count
-	 */
 	public function writeForTranslate(string $message, ?string $namespace, int $count = 1): void
 	{
-		try {
-			if (Strings::trim($message) !== '' && (Strings::match($message, '/^::[a-zA-Z0-9-._]*$/s') !== null || $this->selectedLanguage !== $this->defaultLanguage)) {
-				$find = $this->database->table(self::TRANSLATIONS_TABLE_NAME)
-					->where('language', $this->selectedLanguage)
-					->where('original', $message)
-					->where('namespace', $namespace)
-					->where('count', (string) $count)
-					->count();
+		if (
+			Strings::trim($message) !== ''
+			&& (
+				Strings::match($message, '/^::[a-zA-Z0-9-._]*$/s') !== null
+				|| $this->selectedLanguage !== $this->defaultLanguage
+			)
+		) {
+			$find = $this->database->table(self::TRANSLATIONS_TABLE_NAME)
+				->where('language', $this->selectedLanguage)
+				->where('original', $message)
+				->where('namespace', $namespace)
+				->where('count', (string) $count)
+				->count();
 
-				if ($find === 0) {
-					$this->database->table(self::TRANSLATIONS_TABLE_NAME)
-						->insert([
-							'language' => $this->selectedLanguage,
-							'original' => $message,
-							'namespace' => $namespace,
-							'count' => (string) $count,
-							'translation' => '',
-						]);
-					$this->translations[] = [
+			if ($find === 0) {
+				$this->database->table(self::TRANSLATIONS_TABLE_NAME)
+					->insert([
+						'language' => $this->selectedLanguage,
 						'original' => $message,
 						'namespace' => $namespace,
 						'count' => (string) $count,
 						'translation' => '',
-					];
+					]);
+				$this->translations[] = [
+					'original' => $message,
+					'namespace' => $namespace,
+					'count' => (string) $count,
+					'translation' => '',
+				];
 
-					if ($count > 1) {
-						$this->writeForTranslate($message, $namespace, 1);
-						$this->writeForTranslate($message, $namespace, $count === 2 ? 5 : 2);
-					}
+				if ($count > 1) {
+					$this->writeForTranslate($message, $namespace, 1);
+					$this->writeForTranslate($message, $namespace, $count === 2 ? 5 : 2);
 				}
 			}
-		} catch (PcreException $exception) {
 		}
 	}
 
@@ -201,8 +193,8 @@ class Translator implements Nette\Localization\ITranslator
 	/**
 	 * @param string $selectedLanguage
 	 *
-	 * @return \JCode\Translator
-	 * @throws \JCode\TranslatorBadLanguageException
+	 * @return Translator
+	 * @throws TranslatorBadLanguageException
 	 */
 	public function setSelectedLanguage(string $selectedLanguage): self
 	{
@@ -218,11 +210,6 @@ class Translator implements Nette\Localization\ITranslator
 	}
 
 
-	/**
-	 * @param string $lang
-	 *
-	 * @return string
-	 */
 	public static function getLocale(string $lang): string
 	{
 		$locales = [
@@ -269,8 +256,8 @@ class Translator implements Nette\Localization\ITranslator
 	/**
 	 * @param string $defaultLanguage
 	 *
-	 * @return \JCode\Translator
-	 * @throws \JCode\TranslatorBadLanguageException
+	 * @return Translator
+	 * @throws TranslatorBadLanguageException
 	 */
 	public function setDefaultLanguage(string $defaultLanguage): self
 	{

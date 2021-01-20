@@ -16,26 +16,27 @@
 	},
 	"scripts": {
 		"t": "vendor/bin/tester tests -C",
-		"sa": "docker run --rm -v $PWD:/app phpstan/phpstan analyse src -l max --memory-limit=512M --ansi",
+		"sa": "vendor/bin/phpstan.phar analyse --ansi",
 		"cs-i": "composer create-project nette/coding-standard temp/nette-coding-standard",
-		"cs-t": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --config temp/nette-coding-standard/coding-standard-php71.yml --ansi",
-		"cs-f": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --config temp/nette-coding-standard/coding-standard-php71.yml --fix --ansi"
+		"cs-t": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --preset php74 --ansi",
+		"cs-f": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --preset php74 --fix --ansi"
 	},
 	"require": {
-		"php": ">=7.1.0",
+		"php": ">=7.4.0",
 		"ext-pdo": "*",
 
-		"nette/utils": "^3.0",
-		"nette/caching": "^3.0",
-		"nette/database": "^3.0",
-		"thecodingmachine/safe": "^1.0"
+		"nette/utils": "^3.2",
+		"nette/caching": "^3.1",
+		"nette/database": "^3.1",
+		"thecodingmachine/safe": "^1.3"
 	},
 	"require-dev": {
 		"nette/tester": "^2.3",
 		"stanislav-janu/phpstan": "^0.12"
 	},
 	"conflict": {
-		"nette/utils": "<3.0"
+		"nette/utils": "<3.0",
+		"nette/caching": "<3.1"
 	},
 	"minimum-stability": "stable",
 	"extra": {

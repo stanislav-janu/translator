@@ -14,7 +14,7 @@ use JCode\TranslatorBadLanguageException;
 use Nette\Caching\Storages\MemoryStorage;
 use Nette\Database\Connection;
 use Nette\Database\ConnectionException;
-use Nette\Database\Context;
+use Nette\Database\Explorer;
 use Nette\Database\Structure;
 use Nette\Utils\DateTime;
 use Tester\Assert;
@@ -31,7 +31,7 @@ $options = [
 	\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4',
 ];
 
-$storage = new MemoryStorage();
+$storage = new MemoryStorage;
 try {
 	$connection = new Connection($dsn, $user, $password, $options);
 } catch (ConnectionException $exception) {
@@ -40,14 +40,14 @@ try {
 }
 
 $structure = new Structure($connection, $storage);
-$database = new Context($connection, $structure);
+$database = new Explorer($connection, $structure);
 
 $database->beginTransaction();
 $database->query(
 	'SET FOREIGN_KEY_CHECKS=0;'
 	. 'DROP TABLE `languages`;'
 	. 'DROP TABLE `translations`;'
-	. 'SET FOREIGN_KEY_CHECKS=1;'
+	. 'SET FOREIGN_KEY_CHECKS=1;',
 );
 $database->commit();
 
@@ -91,7 +91,7 @@ Assert::same('app.test', $translator->translate('app.test', 2));
 Assert::same('app.test', $translator->translate('app.test', 5));
 
 Assert::same('17. June 1991  3:33:12', $translator->translateDateTime(DateTime::from('1991-06-17 03:33:12'), '%e. %B %Y %k:%M:%S'));
-Assert::same('17. June 1991  3:33:12', $translator->translateDateTime(677122392, '%e. %B %Y %k:%M:%S'));
+Assert::same('17. June 1991  3:33:12', $translator->translateDateTime(677_122_392, '%e. %B %Y %k:%M:%S'));
 
 
 
@@ -101,6 +101,6 @@ $database->query(
 	'SET FOREIGN_KEY_CHECKS=0;'
 	. 'DROP TABLE `languages`;'
 	. 'DROP TABLE `translations`;'
-	. 'SET FOREIGN_KEY_CHECKS=1;'
+	. 'SET FOREIGN_KEY_CHECKS=1;',
 );
 $database->commit();
