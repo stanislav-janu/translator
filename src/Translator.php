@@ -278,4 +278,13 @@ class Translator implements Nette\Localization\Translator
 	{
 		return $this->languages;
 	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getSelectedLanguage(): string
+	{
+		return $this->selectedLanguage;
+	}
 }
