@@ -14,7 +14,6 @@ use Nette\Caching\Cache;
 use Nette\Caching\Storage;
 use Nette\Database\Explorer;
 use Nette\Utils\Strings;
-use function Safe\sprintf;
 use TypeError;
 
 
