@@ -33,7 +33,7 @@ $options = [
 $storage = new MemoryStorage;
 try {
 	$connection = new Connection($dsn, $user, $password, $options);
-} catch (ConnectionException $exception) {
+} catch (ConnectionException) {
 	$password = 'root';
 	$connection = new Connection($dsn, $user, $password, $options);
 }
