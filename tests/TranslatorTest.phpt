@@ -23,7 +23,7 @@ require __DIR__ . '/bootstrap.php';
 
 
 // SetUp
-$dsn = 'mysql:host=127.0.0.1;dbname=test';
+$dsn = 'mysql:host=localhost;dbname=test';
 $user = 'root';
 $password = '';
 $options = [
