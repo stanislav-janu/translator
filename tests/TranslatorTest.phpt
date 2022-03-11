@@ -16,7 +16,6 @@ use Nette\Database\Connection;
 use Nette\Database\ConnectionException;
 use Nette\Database\Explorer;
 use Nette\Database\Structure;
-use Nette\Utils\DateTime;
 use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
