@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace JCode;
 
-
-class TranslatorBadLanguageException extends \Exception
+use Exception;
+class TranslatorBadLanguageException extends Exception
 {
 }

@@ -16,13 +16,18 @@
 	},
 	"scripts": {
 		"t": "vendor/bin/tester tests -C",
-		"sa": "vendor/bin/phpstan.phar analyse --ansi",
-		"cs-i": "composer create-project nette/coding-standard temp/nette-coding-standard",
-		"cs-t": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --preset php74 --ansi",
-		"cs-f": "php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --preset php74 --fix --ansi"
+		"cov": "vendor/bin/tester tests -C -s --colors 1 --coverage coverage.html --coverage-src app",
+		"sa": "vendor/bin/phpstan.phar analyse --memory-limit=512M --ansi",
+		"sap": "vendor/bin/phpstan.phar analyse --memory-limit=512M --ansi --pro",
+		"sacc": "vendor/bin/phpstan.phar clear-result-cache",
+		"r": "vendor/bin/rector process --config rector.php --dry-run --ansi",
+		"r-f": "vendor/bin/rector process --config rector.php --ansi",
+		"cs-i": "rm -rf temp/nette-coding-standard && composer create-project nette/coding-standard temp/nette-coding-standard",
+		"cs": "PHP_CS_FIXER_IGNORE_ENV=1 php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --preset php80",
+		"cs-f": "PHP_CS_FIXER_IGNORE_ENV=1 php -d memory_limit=512M temp/nette-coding-standard/ecs check src tests --preset php80 --fix"
 	},
 	"require": {
-		"php": ">=7.4.0",
+		"php": ">=8.0",
 		"ext-pdo": "*",
 
 		"nette/utils": "^3.2",
@@ -32,7 +37,8 @@
 	},
 	"require-dev": {
 		"nette/tester": "^2.3",
-		"stanislav-janu/phpstan": "^0.12"
+		"stanislav-janu/phpstan": "^1.0",
+		"rector/rector": "^0.12"
 	},
 	"conflict": {
 		"nette/utils": "<3.0",
@@ -41,7 +47,7 @@
 	"minimum-stability": "stable",
 	"extra": {
 		"branch-alias": {
-			"dev-master": "3.0-dev"
+			"dev-master": "4.0-dev"
 		}
 	}
 }

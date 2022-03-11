@@ -9,10 +9,13 @@ declare(strict_types=1);
 
 namespace JCode;
 
-use DateTimeInterface;
 use Nette;
+use Nette\Caching\Cache;
+use Nette\Caching\Storage;
+use Nette\Database\Explorer;
 use Nette\Utils\Strings;
 use function Safe\sprintf;
+use TypeError;
 
 
 /**
@@ -24,14 +27,12 @@ class Translator implements Nette\Localization\Translator
 	public const LANGUAGES_TABLE_NAME = 'languages';
 	public const TRANSLATIONS_TABLE_NAME = 'translations';
 
-	public Nette\Database\Explorer $database;
-
-	public Nette\Caching\Cache $cache;
+	public Cache $cache;
 
 	/** @var array<string> */
 	private array $languages;
 
-	/** @var array<array> */
+	/** @var array<array<string, mixed>> */
 	private array $translations = [];
 
 	private string $defaultLanguage = 'cz';
@@ -39,57 +40,34 @@ class Translator implements Nette\Localization\Translator
 	private string $selectedLanguage = 'cz';
 
 
-	/**
-	 * Translator constructor.
-	 *
-	 * @param Nette\Database\Explorer $database
-	 * @param Nette\Caching\Storage   $storage
-	 */
-	public function __construct(Nette\Database\Explorer $database, Nette\Caching\Storage $storage)
-	{
-		$this->database = $database;
-		$this->cache = new Nette\Caching\Cache($storage, 'JCode-translator');
+	public function __construct(
+		public Explorer $database,
+		Storage $storage,
+	) {
+		$this->cache = new Cache($storage, 'JCode-translator');
 
-		$this->languages = $this->cache->load('translator-languages', function (&$dependencies) use ($database): array {
-			$dependencies = [
-				Nette\Caching\Cache::EXPIRE => '60 minutes',
-			];
-
-			return $database->table(self::LANGUAGES_TABLE_NAME)
+		$languages = $this->cache->load('translator-languages');
+		if ($languages === null) {
+			$this->languages = $database->table(self::LANGUAGES_TABLE_NAME)
 				->order('order')
 				->fetchPairs('code', 'name');
-		});
-	}
-
-
-	/**
-	 * @param int|DateTimeInterface $date
-	 * @param string                $format
-	 *
-	 * @return string
-	 */
-	public function translateDateTime($date, string $format = '%e. %B %Y'): string
-	{
-		if ($date instanceof DateTimeInterface) {
-			$timestamp = $date->getTimestamp();
+			$this->cache->save('translator-languages', $this->languages, [
+				Cache::EXPIRE => '60 minutes',
+			]);
 		} else {
-			$timestamp = $date;
+			$this->languages = $languages;
 		}
-
-		return (string) strftime($format, $timestamp);
 	}
 
 
 	/**
 	 * @param mixed $message
 	 * @param mixed ...$parameters
-	 *
-	 * @return string
 	 */
 	public function translate($message, ...$parameters): string
 	{
 		if (!is_string($message)) {
-			throw new \TypeError(sprintf('Parameter $message must be string, %s given.', gettype($message)));
+			throw new TypeError(sprintf('Parameter $message must be string, %s given.', gettype($message)));
 		}
 
 		$namespace = null;
@@ -191,9 +169,6 @@ class Translator implements Nette\Localization\Translator
 
 
 	/**
-	 * @param string $selectedLanguage
-	 *
-	 * @return Translator
 	 * @throws TranslatorBadLanguageException
 	 */
 	public function setSelectedLanguage(string $selectedLanguage): self
@@ -232,10 +207,8 @@ class Translator implements Nette\Localization\Translator
 		$database = $this->database;
 		$selectedLanguage = $this->selectedLanguage;
 
-		$this->translations = $this->cache->load('translations-' . $selectedLanguage, function (&$dependencies) use ($database, $selectedLanguage): array {
-			$dependencies = [
-				Nette\Caching\Cache::EXPIRE => '60 minutes',
-			];
+		$translations = $this->cache->load('translations-' . $selectedLanguage);
+		if ($translations === null) {
 			$translations = [];
 			foreach ($database->table(self::TRANSLATIONS_TABLE_NAME)
 				->where('language', $selectedLanguage)
@@ -247,16 +220,15 @@ class Translator implements Nette\Localization\Translator
 					'count' => (int) $item->count,
 				];
 			}
-
-			return $translations;
-		});
+			$this->cache->save('translations-' . $selectedLanguage, $translations, [
+				Cache::EXPIRE => '60 minutes',
+			]);
+		}
+		$this->translations = $translations;
 	}
 
 
 	/**
-	 * @param string $defaultLanguage
-	 *
-	 * @return Translator
 	 * @throws TranslatorBadLanguageException
 	 */
 	public function setDefaultLanguage(string $defaultLanguage): self
@@ -280,9 +252,6 @@ class Translator implements Nette\Localization\Translator
 	}
 
 
-	/**
-	 * @return string
-	 */
 	public function getSelectedLanguage(): string
 	{
 		return $this->selectedLanguage;
