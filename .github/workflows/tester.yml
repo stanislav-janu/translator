@@ -18,5 +18,9 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
+      - uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql database: test
+          mysql root password: root
       - run: composer install --prefer-dist --no-progress --no-suggest
       - run: vendor/bin/tester tests -C -s
