@@ -42,18 +42,14 @@ try {
 $structure = new Structure($connection, $storage);
 $database = new Explorer($connection, $structure);
 
-$database->beginTransaction();
 $database->query(
 	'SET FOREIGN_KEY_CHECKS=0;'
 	. 'DROP TABLE `languages`;'
 	. 'DROP TABLE `translations`;'
 	. 'SET FOREIGN_KEY_CHECKS=1;',
 );
-$database->commit();
 
-$database->beginTransaction();
 $database->query(file_get_contents(__DIR__ . '/files/tables.sql'));
-$database->commit();
 
 $translator = new Translator($database, $storage);
 
@@ -90,17 +86,11 @@ Assert::same('app.test', $translator->translate('app.test'));
 Assert::same('app.test', $translator->translate('app.test', 2));
 Assert::same('app.test', $translator->translate('app.test', 5));
 
-Assert::same('17. June 1991  3:33:12', $translator->translateDateTime(DateTime::from('1991-06-17 03:33:12'), '%e. %B %Y %k:%M:%S'));
-Assert::same('17. June 1991  3:33:12', $translator->translateDateTime(677_122_392, '%e. %B %Y %k:%M:%S'));
-
-
 
 // Clean
-$database->beginTransaction();
 $database->query(
 	'SET FOREIGN_KEY_CHECKS=0;'
 	. 'DROP TABLE `languages`;'
 	. 'DROP TABLE `translations`;'
 	. 'SET FOREIGN_KEY_CHECKS=1;',
 );
-$database->commit();
