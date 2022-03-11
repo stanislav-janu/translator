@@ -35,7 +35,7 @@ jobs:
         run: sudo systemctl start mysql
 
       - name: Create db
-        run: mysql -u root -p root -e 'CREATE DATABASE IF NOT EXISTS test;'
+        run: mysql -u root -proot -e 'CREATE DATABASE IF NOT EXISTS test;'
 
       - name: Composer install
         run: composer install --prefer-dist --no-progress --no-suggest
