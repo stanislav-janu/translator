@@ -16,7 +16,6 @@
 	},
 	"scripts": {
 		"t": "vendor/bin/tester tests -C",
-		"cov": "vendor/bin/tester tests -C -s --colors 1 --coverage coverage.html --coverage-src app",
 		"sa": "vendor/bin/phpstan.phar analyse --memory-limit=512M --ansi",
 		"sap": "vendor/bin/phpstan.phar analyse --memory-limit=512M --ansi --pro",
 		"sacc": "vendor/bin/phpstan.phar clear-result-cache",

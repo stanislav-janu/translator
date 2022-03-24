@@ -38,6 +38,8 @@ class Translator implements Nette\Localization\Translator
 
 	private string $selectedLanguage = 'cz';
 
+	private ?string $namespace = null;
+
 
 	public function __construct(
 		public Explorer $database,
@@ -56,6 +58,14 @@ class Translator implements Nette\Localization\Translator
 		} else {
 			$this->languages = $languages;
 		}
+	}
+
+
+	public function withNamespace(string $namespace): static
+	{
+		$instance = clone $this;
+		$instance->namespace = $namespace;
+		return $instance;
 	}
 
 
@@ -81,6 +91,10 @@ class Translator implements Nette\Localization\Translator
 					$count = $parameters[1];
 				}
 			}
+		}
+
+		if ($namespace === null && $this->namespace !== null) {
+			$namespace = $this->namespace;
 		}
 
 		$count = self::getCount($count);
